@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="iso-8859-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobación de Texto</title>
+    <style>
+        select {
+            background-color: darkred;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="displayText"></div>
+    <button onclick="comprobarRespuestas()">Comprobar</button>
+    <div id="resultado"></div>
+
+    <script>
+        const texto = "l. La presente Ley tiene por *objeto* regular los *requisitos* de validez y *eficacia* de los actos *administrativos*, el procedimiento *administrativo* común a *todas* las Administraciones *Públicas*, incluyendo el *sancionador* y el de reclamación de *responsabilidad* de las Administraciones Públicas, así como los principios a los que se ha de ajustar el *ejercicio* de la iniciativa *legislativa* y la *potestad* reglamentaria.";
+        const palabras = texto.split(" ");
+
+        const sinonimos = {
+            "objeto": ["finalidad", "propósito", "meta"],
+            "requisitos": ["condiciones", "exigencias", "criterios"],
+            "eficacia": ["efectividad", "rendimiento", "productividad"],
+            "administrativos": ["burocráticos", "oficiales", "gestionarios"],
+            "todas": ["cada una", "todas y cada una", "absolutamente todas"],
+            "Públicas": ["gubernamentales", "estatales", "oficiales"],
+            "sancionador": ["punitivo", "correctivo", "disciplinario"],
+            "responsabilidad": ["obligación", "deber", "compromiso"],
+            "ejercicio": ["práctica", "desempeño", "realización"],
+            "legislativa": ["normativa", "jurídica", "legal"],
+            "potestad": ["autoridad", "poder", "facultad"]
+        };
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function mostrarTexto() {
+            const displayDiv = document.getElementById("displayText");
+            palabras.forEach(palabra => {
+                const palabraActual = palabra.replace(/\*/g, "");
+                if (sinonimos[palabraActual]) {
+                    const opciones = [palabraActual, ...sinonimos[palabraActual]];
+                    shuffleArray(opciones);
+
+                    const selectElement = document.createElement("select");
+                    selectElement.setAttribute("data-correct", palabraActual);
+                    const defaultOption = document.createElement("option");
+                    defaultOption.value = "";
+                    defaultOption.text = "";
+                    selectElement.appendChild(defaultOption);
+
+                    opciones.forEach(opcion => {
+                        const optionElement = document.createElement("option");
+                        optionElement.value = opcion;
+                        optionElement.text = opcion;
+                        selectElement.appendChild(optionElement);
+                    });
+                    displayDiv.appendChild(selectElement);
+                } else {
+                    displayDiv.innerHTML += palabra + " ";
+                }
+            });
+        }
+
+        function comprobarRespuestas() {
+            const selects = document.querySelectorAll("select");
+            let correcto = true;
+            selects.forEach(select => {
+                if (select.value !== select.getAttribute("data-correct")) {
+                    correcto = false;
+                }
+            });
+
+            const resultadoDiv = document.getElementById("resultado");
+            if (correcto) {
+                resultadoDiv.innerHTML = "Enhorabuena!!!";
+            } else {
+                resultadoDiv.innerHTML = "Incorrecto. Debe repetir la actividad!";
+            }
+        }
+
+        mostrarTexto();
+    </script>
+</body>
+</html>
